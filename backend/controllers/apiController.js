@@ -1,5 +1,7 @@
 require("dotenv").config()
+const notificationController = require("../controllers/notificationController")
 const Campaign = require("../models/campaign")
+
 
 
 
@@ -21,6 +23,7 @@ const createCampaign = async (req, res) => {
             campaignImage: "test"
         })
         await newCampaign.save()
+        await notificationController.sendBroadcastNotificationCampaignCreated(req.body.campaignName, req.body.amountReq) 
         res.send("Campaign Created")
     }
     catch (err) {
@@ -91,6 +94,7 @@ const donateToCampaign = async (req, res) => {
 
         const newAmountRaised = amountRaised + req.body.amountDonated
         await Campaign.updateOne({_id: req.body.campaignId}, {amountRaised: newAmountRaised})
+        await notificationController.sendBroadcastNotificationCampaignDonated(campaign[0].campaignName, req.body.amountDonated)
         res.send(response)
         return
     }
