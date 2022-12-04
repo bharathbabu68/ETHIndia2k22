@@ -15,7 +15,7 @@ Zk-Bob !!! Making use of Zk-Bob allows us to achieve on-chain privacy by means o
 
 ### Sponsors Integrated
 1. zk-Bob
-Here, zk-Bob Cloud API is used to manage two zk-Bob Cloud Accounts. One account represents the campaign creator and the other account represents the donator to the campaign. Various APIs have been used for balances, transfers, etc. 
+Here, zk-Bob Cloud API is used to manage two zk-Bob Cloud Accounts. One account represents the campaign creator and the other account represents the donator to the campaign. Various APIs have been used for balances, transfers, etc. Also all funds are raised in stablecoin enabling easy conversion back to Fiat and better tracking due to less volatility
 
 2. Push Protocol
 Push Protocol enables notifications on all activity on this platform - be it campaigns created or funding raised etc. Using Push Protocol and the created channel, users can received push notifications when any activity happens on zkFundRaise enabling better communication.
