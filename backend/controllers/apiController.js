@@ -6,14 +6,19 @@ const Campaign = require("../models/campaign")
 const createCampaign = async (req, res) => {
 
     try {
+        // get zkaddress for campaign
+        const response = await fetch(`https://cloud-mvp.zkbob.com/generateAddress?id=${process.env.ACCOUNT2_API_KEY}`);
+        const data = await response.json();
+        const campaignZkAddress = data.address
+
         const newCampaign = new Campaign({
             campaignCreatorEvmAddress: req.body.campaignCreatorEvmAddress,
-            campaignZkAddress: req.body.campaignZkAddress,
+            campaignZkAddress: campaignZkAddress,
             amountReq: req.body.amountReq,
             amountRaised: 0,
             campaignName: req.body.campaignName,
             campaignDesc: req.body.campaignDesc,
-            campaignImage: req.body.campaignImage
+            campaignImage: "test"
         })
         await newCampaign.save()
         res.send("Campaign Created")
@@ -59,10 +64,35 @@ const donateToCampaign = async (req, res) => {
         const amountRaised = campaign[0].amountRaised
         if(amountRaised >= campaign[0].amountReq){
             res.send("Campaign is already funded")
+            return
         }
+
+        
+        // send tx to zk address
+        const response = await fetch('https://cloud-mvp.zkbob.com/transfer',{
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "accountId": process.env.ACCOUNT1_API_KEY,
+                "amount": req.body.amountDonated * 10**9,
+                "to": req.body.campaignZkAddress,
+          })})
+
+        if(response.status != 200){
+            res.send("Error donating to campaign")
+            return
+        }
+        else{
+            console.log("Transaction submitted to relayer !")
+        }
+
+
         const newAmountRaised = amountRaised + req.body.amountDonated
         await Campaign.updateOne({_id: req.body.campaignId}, {amountRaised: newAmountRaised})
-        res.send("Donation Successful")
+        res.send(response)
+        return
     }
     catch (err) {
         console.log(err)
@@ -70,4 +100,13 @@ const donateToCampaign = async (req, res) => {
     }
 }
 
-module.exports = {createCampaign, getAllCampaigns, getCampaignById, donateToCampaign}
+const getBobBalance = async (req, res) => {
+    const response = await fetch(`https://cloud-mvp.zkbob.com/account?id=${process.env.ACCOUNT1_API_KEY}`);
+    const data = await response.json();
+    var balance = {
+        balance: data.balance / 10**9
+    }
+    res.send(balance)
+}
+
+module.exports = {createCampaign, getAllCampaigns, getCampaignById, donateToCampaign, getBobBalance}

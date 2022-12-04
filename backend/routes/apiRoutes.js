@@ -11,4 +11,6 @@ router.get("/getCampaignById/:id", apiController.getCampaignById)
 
 router.post("/donateToCampaign", apiController.donateToCampaign)
 
+router.get("/getBobBalance", apiController.getBobBalance)
+
 module.exports = router
