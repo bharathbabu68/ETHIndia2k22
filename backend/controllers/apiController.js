@@ -69,8 +69,7 @@ const donateToCampaign = async (req, res) => {
             res.send("Campaign is already funded")
             return
         }
-
-        
+        const newAmountRaised = amountRaised + req.body.amountDonated
         // send tx to zk address
         const response = await fetch('https://cloud-mvp.zkbob.com/transfer',{
             method: 'POST',
@@ -88,14 +87,11 @@ const donateToCampaign = async (req, res) => {
             return
         }
         else{
+            await Campaign.updateOne({_id: req.body.campaignId}, {amountRaised: newAmountRaised})
+            await notificationController.sendBroadcastNotificationCampaignDonated(campaign[0].campaignName, req.body.amountDonated)
+            res.send(response)
             console.log("Transaction submitted to relayer !")
         }
-
-
-        const newAmountRaised = amountRaised + req.body.amountDonated
-        await Campaign.updateOne({_id: req.body.campaignId}, {amountRaised: newAmountRaised})
-        await notificationController.sendBroadcastNotificationCampaignDonated(campaign[0].campaignName, req.body.amountDonated)
-        res.send(response)
         return
     }
     catch (err) {

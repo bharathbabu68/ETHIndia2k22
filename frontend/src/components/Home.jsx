@@ -151,7 +151,7 @@ function Home() {
 
       <Modal centered show={showFundCampaignModal} onHide={handleCloseFundCampaignModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Create New Campaign</Modal.Title>
+          <Modal.Title>Fund Campaign</Modal.Title>
         </Modal.Header>
         <Modal.Body>
         <Form>
